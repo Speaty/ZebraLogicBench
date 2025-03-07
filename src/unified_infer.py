@@ -53,6 +53,7 @@ def parse_args():
 
     parser.add_argument('--use_hf_conv_template', action='store_true')
     parser.add_argument('--use_imend_stop', action='store_true')
+    parser.add_argument('--format', default="json", type=str) # only for zebra-grid, type of output format (JSON/XML/YAML)
 
     # only for MT-bench; not useful for other benchmarks
     # parser.add_argument('--cot', type=str, default="True")
@@ -95,7 +96,7 @@ if __name__ == "__main__":
     args = parse_args()
     args = sanitize_args(args)
 
-   
+    print(args.format)
 
     # Load the model
     print("loading model!")

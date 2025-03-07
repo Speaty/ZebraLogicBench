@@ -1,0 +1,21 @@
+[project]
+name = "zebralogicbench"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "openai",
+    "datasets",
+    "tenacity",
+    "google-generativeai",
+    "cohere",
+    "mistralai<1.0",
+    "anthropic",
+    "reka-api",
+    "jsonlines",
+    "together",
+    "fire",
+    "transformers>=4.49.0",
+    "accelerate>=1.4.0",
+]

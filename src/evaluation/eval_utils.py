@@ -1,6 +1,9 @@
 import re 
 import os 
 import json 
+import xml.etree.ElementTree as ET
+import xml.dom.minidom as minidom
+import xmltodict
 
 total_num_examples = {
     'gsm': 1319,
@@ -135,12 +138,110 @@ def extract_last_complete_json(s):
     
     return None
 
+def extract_first_complete_xml(s):
+    pass
+
+def extract_last_complete_xml(s):
+    pattern = re.compile(
+        r'(<data>.*?</data>)',
+        re.DOTALL
+    )
+    print(f"Searching for XML in: {s}")
+    
+    match = pattern.search(s)
+    if match:
+        # print(f"match: {match}")
+        candidate = match.group(1)
+        
+        # Verify candidate is well-formed XML.
+        # print(f"Candidate: {candidate}")
+        try:
+            ET.fromstring(candidate)
+            print(f"Candidate is well-formed XML")
+            return xml_to_dict(candidate)
+        except ET.ParseError:
+            print(f"Candidate is not well-formed XML")
+            return None
+    else:
+        print("No match found\n\n")
+        return None
+
+def xml_to_dict(s):
+    dict_obj = xmltodict.parse(s)
+    data = dict_obj['data']
+
+    transformed = {k: v for k, v in data.items() if k != "solution"} # copy the non-solution part of the dictionary
+
+    houses = data.get("solution", {}).get("house", [])
+    new_solution = {}
+
+    for house in houses:
+        house_id = house["@id"]
+        if house_id:
+            house_data = {k: v for k, v in house.items() if k != "@id"}
+            new_solution[house_id] = house_data
+    transformed["solution"] = new_solution
+    return transformed
+
+def extract_first_complete_yaml(s):
+    pass
+
+def extract_last_complete_yaml(s):
+    pass
+
 
 if __name__ == "__main__":
     json_test = """
     {
-        "reasoning": "Calculate shipping cost ($1.40 per pound x 4 pounds) and mileage cost ($0.08 per mile x 20 miles), then add them together ($3.00). Determine refund amount (75% of $32 = $24) and subtract it from the total shipping cost to find Milly’s loss (-$21).",
-        "answer": -21
+        "reasoning": "Arnold drinks tea.",
+        "solution": {
+            "House 1": {
+                "Name": "Arnold",
+                "Drink": "tea"
+            },
+            "House 2": {
+                "Name": "Peter",
+                "Drink": "water"
+            },
+            "House 3": {
+                "Name": "Eric",
+                "Drink": "milk"
+            }
+        }
     }
+
+    """
+
+    xml_test = """
+    There are 3 houses, numbered 1 to 3 from left to right, as seen from across the street. Each house is occupied by a different person. Each house has a unique attribute for each of the following characteristics:
+    - Each person has a unique name: `Peter`, `Eric`, `Arnold`.
+    - Each person has a unique favorite drink: `tea`, `water`, `milk`
+
+    ## Clues for the Example Puzzle
+
+    1. Peter is in the second house.
+    2. Arnold is directly left of the one who only drinks water.
+    3. The one who only drinks water is directly left of the person who likes milk.
+
+    ## Answer to the Example Puzzle
+
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <root>
+        <reasoning>Arnold drinks tea.</reasoning>
+        <solution>
+            <house id="House 1">
+                <Name>Arnold</Name>
+                <Drink>tea</Drink>
+            </house>
+            <house id="House 2">
+                <Name>Peter</Name>
+                <Drink>water</Drink>
+            </house>
+        </solution>
+    </root>
     """
     print(json.dumps(extract_last_complete_json(json_test), indent=2))
+    # print(extract_last_complete_xml(xml_test))
+    dict_test = extract_last_complete_xml(xml_test)
+    print(json.dumps(dict_test, indent=2))
+    # print(json.dumps(xml_to_dict(dict_test), indent=2))

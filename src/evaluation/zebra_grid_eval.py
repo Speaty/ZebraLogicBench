@@ -4,7 +4,7 @@ import os
 from tabulate import tabulate
 from datasets import load_dataset
 
-from eval_utils import load_model_results, extract_last_complete_json, model_name_replacement
+from eval_utils import load_model_results, extract_last_complete_json, extract_last_complete_xml, extract_last_complete_yaml, model_name_replacement
 
 from collections import Counter
 from collections import defaultdict
@@ -22,7 +22,7 @@ def load_private_solutions():
 # Cache to store loaded data
 file_cache = {}
 
-def eval_model(model, filepath, mode="best_of_n", max_N=None):
+def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json"):
     global private_solutions, file_cache
 
     # Check if the data is already cached
@@ -65,7 +65,15 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None):
         total_cells += this_total_cells
 
         # Read and Parse the predictions from model output
-        predictions = [extract_last_complete_json(output) for output in item["output"]]
+        if format == "json":
+            predictions = [extract_last_complete_json(output) for output in item["output"]]
+        elif format == "xml":
+            print("Extracting XML")
+            predictions = [extract_last_complete_xml(output) for output in item["output"]]
+        elif format == "yaml":
+            predictions = [extract_last_complete_yaml(output) for output in item["output"]]
+        else:
+            raise ValueError(f"Unknown format: {format}")
         predictions = [p for p in predictions if p is not None and "solution" in p and p["solution"] is not None]
 
         # if all the predictions are empty, then skip the current puzzle, and add no answer count
@@ -298,7 +306,7 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None):
     return result, parsed_results  # Return parsed_results along with the result
 
 
-def gen_results(run_name_folders, bon=False, save_results=True):
+def gen_results(run_name_folders, bon=False, save_results=True, format="json"):
     model_results = load_model_results(run_name_folders)
 
     def save_parsed_results(filepath, parsed_results, bon=bon):
@@ -337,7 +345,7 @@ def gen_results(run_name_folders, bon=False, save_results=True):
                     continue
                 if "rm_32" in filepath and K > 32:
                     continue
-                result, parsed_results = eval_model(model_name, filepath, mode="rm_bon", max_N=K)
+                result, parsed_results = eval_model(model_name, filepath, mode="rm_bon", max_N=K, format=format)
                 save_parsed_results(filepath.replace(".json", f".rm_bon.K={K}.json"), parsed_results)
                 rows.append(result)
 
@@ -354,7 +362,7 @@ def gen_results(run_name_folders, bon=False, save_results=True):
                 # rows.append(result)
         else:
             # Save the parsed_results to the same filepath with a new prefix
-            result, parsed_results = eval_model(model_name, filepath, mode="single")
+            result, parsed_results = eval_model(model_name, filepath, mode="single", format=format)
             save_parsed_results(filepath, parsed_results)
             rows.append(result)
     if "bon_" in filepath:
@@ -384,7 +392,7 @@ def gen_results(run_name_folders, bon=False, save_results=True):
 if __name__ == "__main__":
 
     run_name_folders = {
-        "greedy": "result_dirs/zebra-grid",
+        "greedy": "result_dirs/zebra-grid/xml",
         # "sampling": "result_dirs/zebra-grid/sampling",
         # "bon_all": "result_dirs/zebra-grid/bon_all",
         # "rm": "result_dirs/zebra-grid/rm_32",
@@ -393,5 +401,5 @@ if __name__ == "__main__":
         # "zebra_oracle": "result_dirs/zebra-grid/zebra_oracle/",
     }
     load_private_solutions()
-    gen_results(run_name_folders, bon=False, save_results=True)
+    gen_results(run_name_folders, bon=False, save_results=True, format="xml")
 

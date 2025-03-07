@@ -1,7 +1,9 @@
 import json
+import xml.etree.ElementTree as ET
+import xml.dom.minidom as minidom
+import yaml
 
-
-from templates.ZEBRA_GRID import ZEBRA_GRID
+from templates.ZEBRA_GRID import ZEBRA_GRID_JSON, ZEBRA_GRID_XML, ZEBRA_GRID_YAML
 from templates.MCQA import MCQA
 from templates.OEQA import OEQA, OEQA_DIRECT
 
@@ -29,19 +31,50 @@ def apply_oeqa_template(item, question_key="question", cot=True):
     prompt_str = prompt_str.replace("{question}", question) 
     return prompt_str
  
-def apply_lgp_grid_template(item):
-    prompt_str = ZEBRA_GRID[:] 
-    prompt_str = prompt_str.replace("{puzzle}", item["puzzle"])
+def apply_lgp_grid_template(item, format="json"):
     num_houses = len(item["solution"]["rows"])
     columns = item["solution"]["header"]
     assert columns[0] == "House"
-    json_template = {"reasoning": "___", "solution": {}}
-    for i in range(num_houses):
-        json_template["solution"][f'House {i+1}'] = {columns[j]: "___" for j in range(1, len(columns))}
-    json_str = json.dumps(json_template, indent=4)
-    prompt_str = prompt_str.replace("{json_template}", json_str)
-    return prompt_str
 
+    if format == "json":
+        prompt_str = ZEBRA_GRID_JSON[:]
+        prompt_str = prompt_str.replace("{puzzle}", item["puzzle"])
+        json_template = {"reasoning": "___", "solution": {}}
+        for i in range(num_houses):
+            json_template["solution"][f'House {i+1}'] = {columns[j]: "___" for j in range(1, len(columns))}
+        json_str = json.dumps(json_template, indent=4)
+        prompt_str = prompt_str.replace("{json_template}", json_str)
+        return prompt_str
+
+    elif format == "xml":
+        prompt_str = ZEBRA_GRID_XML[:]
+        prompt_str = prompt_str.replace("{puzzle}", item["puzzle"])
+        root = ET.Element("data")
+        reasoning_elem = ET.SubElement(root, "reasoning")
+        reasoning_elem.text = "___"
+        solution_elem = ET.SubElement(root, "solution")
+        for i in range(num_houses):
+            house_elem = ET.SubElement(solution_elem, "house", id = f"House {i+1}")
+            for j in range(1, len(columns)):
+                ET.SubElement(house_elem, columns[j]).text = "___"
+        xml_str = minidom.parseString(ET.tostring(root, encoding="unicode")).toprettyxml(indent="    ")
+        prompt_str = prompt_str.replace("{xml_template}", xml_str)
+        return prompt_str
+    
+    elif format == "yaml":
+        prompt_str = ZEBRA_GRID_YAML[:]
+        prompt_str = prompt_str.replace("{puzzle}", item["puzzle"])
+        yaml_template = {"reasoning": "___", "solution": {}}
+        for i in range(num_houses):
+            yaml_template["solution"][f'House {i+1}'] = {columns[j]: "___" for j in range(1, len(columns))}
+        yaml_str = yaml.dump(yaml_template, sort_keys=False)
+        prompt_str = prompt_str.replace("{yaml_template}", yaml_str)
+        return prompt_str
+    else:
+        raise ValueError(f"Format {format} not supported")
+
+    
+    
 
 if __name__ == "__main__":
     from datasets import load_dataset

@@ -20,7 +20,7 @@ gpu_memory_utilization=0.95
 MAX_TOKENS=4096; 
 
 # Parse named arguments
-while getopts ":d:m:p:s:r:t:o:e:f:b:x:" opt; do
+while getopts ":d:m:p:s:r:t:o:e:f:b:x:F:" opt; do
   case $opt in
     d) DATA_NAME="$OPTARG"
     ;;
@@ -43,6 +43,8 @@ while getopts ":d:m:p:s:r:t:o:e:f:b:x:" opt; do
     b) batch_size="$OPTARG"
     ;;
     x) MAX_TOKENS="$OPTARG"
+    ;;
+    F) format="$OPTARG"
     ;;
     \?) echo "Invalid option -$OPTARG" >&2
     ;;
@@ -120,12 +122,13 @@ if [ $n_shards -eq 1 ]; then
         --top_p $TOP_P --temperature $TEMP \
         --repetition_penalty $rp \
         --batch_size $batch_size --max_tokens $MAX_TOKENS \
-        --output_folder $output_dir/  
+        --output_folder $output_dir/ \
+        --format $format \
 
 elif [ $n_shards -gt 1 ]; then
     echo "Using Data-parallelism"
-    start_gpu=0
-    num_gpus=1 
+    start_gpu=3
+    num_gpus=4
     shards_dir="${output_dir}/tmp_${model_pretty_name}"
     for ((shard_id = 0, gpu = $start_gpu; shard_id < $n_shards; shard_id++, gpu++)); do
         CUDA_VISIBLE_DEVICES=$gpu \
@@ -147,6 +150,7 @@ elif [ $n_shards -gt 1 ]; then
             --repetition_penalty $rp \
             --batch_size $batch_size --max_tokens $MAX_TOKENS \
             --output_folder $shards_dir/ \
+            --format $format \
               &
     done 
     wait 

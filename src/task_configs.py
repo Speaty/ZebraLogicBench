@@ -38,7 +38,7 @@ def prompt_generation(data_name, data_item, args):
     elif data_name in ["wildbench_v2-hard"]:
         prompt = data_item["conversation_input"][0]["content"]
     elif data_name in ["zebra-grid"]:
-        prompt = apply_lgp_grid_template(data_item) 
+        prompt = apply_lgp_grid_template(data_item, format=args.format) 
     elif data_name in ["gsm", "math-l5"]:
         question_key = "question"
         if data_name == "math-l5":
