@@ -63,7 +63,7 @@ CACHE_DIR=${HF_HOME:-"default"}
 if [ "$run_name" = "default" ]; then
     output_dir="result_dirs/${DATA_NAME}/" 
 else
-    output_dir="result_dirs/${DATA_NAME}/${run_name}/" 
+    output_dir="result_dirs/${DATA_NAME}/${run_name}" 
 fi
 
 # if model name contains "gemma-2" then use a different vllm infer backend
@@ -127,8 +127,8 @@ if [ $n_shards -eq 1 ]; then
 
 elif [ $n_shards -gt 1 ]; then
     echo "Using Data-parallelism"
-    start_gpu=3
-    num_gpus=4
+    start_gpu=4
+    num_gpus=8
     shards_dir="${output_dir}/tmp_${model_pretty_name}"
     for ((shard_id = 0, gpu = $start_gpu; shard_id < $n_shards; shard_id++, gpu++)); do
         CUDA_VISIBLE_DEVICES=$gpu \

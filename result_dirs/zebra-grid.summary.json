@@ -1,18 +1,18 @@
 [
   {
-    "Model": "Qwen2-7B-Instruct",
+    "Model": "Llama3.1-8B-Instruct",
     "Mode": "greedy",
-    "Puzzle Acc": "6.90",
-    "Cell Acc": "24.09",
-    "No answer": "18.30",
-    "Easy Puzzle Acc": "23.57",
-    "Hard Puzzle Acc": "0.42",
-    "Small Puzzle Acc": "21.25",
-    "Medium Puzzle Acc": "0.36",
+    "Puzzle Acc": "11.00",
+    "Cell Acc": "12.27",
+    "No answer": "62.40",
+    "Easy Puzzle Acc": "37.50",
+    "Hard Puzzle Acc": "0.69",
+    "Small Puzzle Acc": "33.44",
+    "Medium Puzzle Acc": "1.07",
     "Large Puzzle Acc": "0.00",
     "XL Puzzle Acc": "0.00",
     "Total Puzzles": 1000,
-    "Reason Lens": "779.28",
+    "Reason Lens": "1021.66",
     "N_Mode": "single",
     "N_Size": 1
   }

@@ -1,6 +1,7 @@
 import re 
 import os 
 import json 
+import yaml
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as minidom
 import xmltodict
@@ -187,7 +188,23 @@ def extract_first_complete_yaml(s):
     pass
 
 def extract_last_complete_yaml(s):
-    pass
+    # Regular expression to detect YAML-like blocks
+    yaml_docs = list(re.finditer(r'(reasoning:.*?solution:.*)(?=\n\n|\Z)', s, re.DOTALL))
+    # print(yaml_docs[0].group(1))
+    last_yaml_str = None
+    for match in yaml_docs:
+        last_yaml_str = match.group(1).strip()
+    
+    # Load the last valid YAML document
+    if last_yaml_str:
+        # print(last_yaml_str)
+        try:
+            return yaml.safe_load(last_yaml_str)
+        except yaml.YAMLError:
+            print("Error loading YAML")
+            pass
+    
+    return None
 
 
 if __name__ == "__main__":
@@ -240,8 +257,26 @@ if __name__ == "__main__":
         </solution>
     </root>
     """
-    print(json.dumps(extract_last_complete_json(json_test), indent=2))
+
+
+    yaml_test = """
+    reasoning: Arnold drinks tea.
+solution:
+    House 1:
+        Name: Arnold
+        Drink: tea
+    House 2:
+        Name: Peter
+        Drink: water
+    House 3:
+        Name: Eric
+        Drink: milk
+    """
+    # print(json.dumps(extract_last_complete_json(json_test), indent=2))
     # print(extract_last_complete_xml(xml_test))
-    dict_test = extract_last_complete_xml(xml_test)
-    print(json.dumps(dict_test, indent=2))
+    # dict_test = extract_last_complete_xml(xml_test)
+    # print(json.dumps(dict_test, indent=2))
+
+    yaml_func = extract_last_complete_yaml(yaml_test)
+    print(yaml_func)
     # print(json.dumps(xml_to_dict(dict_test), indent=2))

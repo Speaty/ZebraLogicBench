@@ -111,12 +111,18 @@ if __name__ == "__main__":
             lora_request = LoRARequest(lora_model_name_or_path.split("/")[-1], 1, lora_model_name_or_path)
         else:
             lora_request = None
-        llm = LLM(model=base_model_name_or_path, tokenizer=args.tokenizer_name, tensor_parallel_size=args.tensor_parallel_size,
-                        download_dir=args.download_dir, dtype=args.dtype, tokenizer_mode=args.tokenizer_mode,
-                        max_model_len=max_model_len, trust_remote_code=True, 
-                        gpu_memory_utilization=args.gpu_memory_utilization,  
-                        enable_lora=lora_request is not None
-                        )
+        llm = LLM(
+            model=base_model_name_or_path, 
+            tokenizer=args.tokenizer_name, 
+            tensor_parallel_size=args.tensor_parallel_size,
+            download_dir=args.download_dir, 
+            dtype=args.dtype, 
+            tokenizer_mode=args.tokenizer_mode,
+            max_model_len=max_model_len, 
+            trust_remote_code=True, 
+            gpu_memory_utilization=args.gpu_memory_utilization,  
+            enable_lora=lora_request is not None,
+        )
     elif args.engine == "hf":
         llm = DecoderOnlyModelManager(args.model_name, args.model_name, cache_dir=args.download_dir,
                                     bf16=args.hf_bf16, gptq=args.hf_gptq)
