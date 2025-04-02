@@ -239,6 +239,8 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json"):
                         predicted_cell = prediction_table[house][column][0].lower().strip()
                     elif type(prediction_table[house][column]) == str:
                         predicted_cell = prediction_table[house][column].lower().strip()
+                    elif type(prediction_table[house][column]) == dict:
+                        predicted_cell = "VOID"
                     else:
                         raise ValueError(f"Unknown type: {type(prediction_table[house][column])}")
                     if truth_cell.lower().strip() == predicted_cell.lower().strip():
