@@ -127,7 +127,7 @@ if [ $n_shards -eq 1 ]; then
 
 elif [ $n_shards -gt 1 ]; then
     echo "Using Data-parallelism"
-    start_gpu=4
+    start_gpu=7
     num_gpus=8
     shards_dir="${output_dir}/tmp_${model_pretty_name}"
     for ((shard_id = 0, gpu = $start_gpu; shard_id < $n_shards; shard_id++, gpu++)); do
@@ -149,7 +149,7 @@ elif [ $n_shards -gt 1 ]; then
             --top_p $TOP_P --temperature $TEMP \
             --repetition_penalty $rp \
             --batch_size $batch_size --max_tokens $MAX_TOKENS \
-            --output_folder $shards_dir/ \
+            --output_folder $shards_dir/ \d
             --format $format \
               &
     done 

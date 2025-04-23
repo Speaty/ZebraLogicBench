@@ -301,6 +301,14 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json"):
     result["Large Puzzle Acc"] = f"{large_solved_puzzles/large_total_puzzles*100:.2f}"
     result["XL Puzzle Acc"] = f"{xl_solved_puzzles/xl_total_puzzles*100:.2f}"
     result["Total Puzzles"] = num_total_puzzles
+    result["Total Easy Puzzles"] = easy_total_puzzles
+    result["Total Hard Puzzles"] = hard_total_puzzles
+    result["Total Small Puzzles"] = small_total_puzzles
+    result["Total Medium Puzzles"] = medium_total_puzzles
+    result["Total Large Puzzles"] = large_total_puzzles
+    result["Total XL Puzzles"] = xl_total_puzzles
+    result["Total Correct Cells"] = correct_cells
+    result["Total Cells"] = total_cells
     result["Reason Lens"] = f"{sum(reason_lens)/len(reason_lens):.2f}"
     result["Model"] = model_name_replacement(result["Model"])
     result["N_Mode"] = "single" if n_size == 1 else mode
@@ -394,7 +402,7 @@ def gen_results(run_name_folders, bon=False, save_results=True, format="json"):
 if __name__ == "__main__":
 
     run_name_folders = {
-        "greedy": "result_dirs/zebra-grid/xml",
+        "greedy": "result_dirs/zebra-grid/json",
         # "sampling": "result_dirs/zebra-grid/sampling",
         # "bon_all": "result_dirs/zebra-grid/bon_all",
         # "rm": "result_dirs/zebra-grid/rm_32",
@@ -403,5 +411,5 @@ if __name__ == "__main__":
         # "zebra_oracle": "result_dirs/zebra-grid/zebra_oracle/",
     }
     load_private_solutions()
-    gen_results(run_name_folders, bon=False, save_results=True, format="xml")
+    gen_results(run_name_folders, bon=False, save_results=True, format="json")
 
