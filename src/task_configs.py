@@ -35,7 +35,7 @@ def prompt_generation(data_name, data_item, args):
         prompt = data_item["instruction"]
     elif data_name in ["wildbench_v2-hard"]:
         prompt = data_item["conversation_input"][0]["content"]
-    elif data_name in ["zebra-grid"]:
+    elif data_name in ["zebra-grid", "zebra-grid-mini"]:
         prompt = apply_lgp_grid_template(data_item, format=args.format) 
     elif data_name in ["gsm", "math-l5"]:
         question_key = "question"
@@ -58,7 +58,7 @@ def result_format(output_item, args):
     """
     if args.data_name in ["alpaca_eval"]:
         output_item["output"] = output_item["output"][0] # use str instead of list 
-    elif args.data_name in ["zebra-grid"]:
+    elif args.data_name in ["zebra-grid", "zebra-grid-mini"]:
         if "solution" in output_item:
             del output_item["solution"]
     elif args.data_name in ["wildbench_v2-hard"]:

@@ -11,9 +11,19 @@ from collections import defaultdict
 
 private_solutions = {}
 
-def load_private_solutions():
-    global private_solutions
-    private_zebra_data = load_dataset("allenai/ZebraLogicBench-private", "grid_mode", split="test")
+def load_private_solutions(size):
+
+    if size == "all":
+        global private_solutions
+        private_zebra_data = load_dataset("allenai/ZebraLogicBench-private", "grid_mode", split="test")
+    elif size == "mini":
+        private_zebra_data = load_dataset("allenai/ZebraLogicBench-private", "grid_mode", split="test")
+        small_sizes = ['2*2', '2*3', '2*4', '2*5', '2*6', '3*2', '3*3', '4*2']
+        private_zebra_data = private_zebra_data.filter(lambda x: x["size"] in small_sizes)
+    else:
+        raise ValueError(f"Size {size} not recognised")
+    
+
     for item in private_zebra_data:
         private_solutions[item["id"]] = item["solution"]
     return
@@ -22,7 +32,7 @@ def load_private_solutions():
 # Cache to store loaded data
 file_cache = {}
 
-def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json"):
+def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json", size="all"):
     global private_solutions, file_cache
 
     # Check if the data is already cached
@@ -260,6 +270,7 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json"):
         parsed_item["parsed"] = True
         parsed_results.append(parsed_item)
 
+
     # # print the success rate by size; order the dict by size first
     sizes = sorted(num_total_puzzles_by_size.keys())
     easy_sizes =  ['2*2', '2*3', '2*4', '2*5', '2*6', '3*2', '3*3',]
@@ -284,35 +295,49 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json"):
     xl_solved_puzzles = sum([solved_puzzles_by_size[size] for size in xl_sizes])
     xl_total_puzzles = sum([num_total_puzzles_by_size[size] for size in xl_sizes])
 
+    if size == "all":
+        result = {}
+        result["Model"] = model.split("%")[0]
+        result["Mode"] = model.split("%")[1]
+        result["Puzzle Acc"] = f"{solved_puzzles/num_total_puzzles*100:.2f}"
+        result["Cell Acc"] = f"{correct_cells/total_cells*100:.2f}"
+        result["No answer"] = f"{no_answer/num_total_puzzles*100:.2f}"
+        result["Easy Puzzle Acc"] = f"{easy_solved_puzzles/easy_total_puzzles*100:.2f}"
+        result["Hard Puzzle Acc"] = f"{hard_solved_puzzles/hard_total_puzzles*100:.2f}"
+        result["Small Puzzle Acc"] = f"{small_solved_puzzles/small_total_puzzles*100:.2f}"
+        result["Medium Puzzle Acc"] = f"{medium_solved_puzzles/medium_total_puzzles*100:.2f}"
+        result["Large Puzzle Acc"] = f"{large_solved_puzzles/large_total_puzzles*100:.2f}"
+        result["XL Puzzle Acc"] = f"{xl_solved_puzzles/xl_total_puzzles*100:.2f}"
+        result["Total Puzzles"] = num_total_puzzles
+        result["Total Easy Puzzles"] = easy_total_puzzles
+        result["Total Hard Puzzles"] = hard_total_puzzles
+        result["Total Small Puzzles"] = small_total_puzzles
+        result["Total Medium Puzzles"] = medium_total_puzzles
+        result["Total Large Puzzles"] = large_total_puzzles
+        result["Total XL Puzzles"] = xl_total_puzzles
+        result["Total Correct Cells"] = correct_cells
+        result["Total Cells"] = total_cells
+        result["Reason Lens"] = f"{sum(reason_lens)/len(reason_lens):.2f}"
+        result["Model"] = model_name_replacement(result["Model"])
+        result["N_Mode"] = "single" if n_size == 1 else mode
+        result["N_Size"] = n_size
 
-    # for size in sizes:
-        # print(f"Size {size}: {solved_puzzles_by_size[size]}/{num_total_puzzles_by_size[size]} -> {solved_puzzles_by_size[size]/num_total_puzzles_by_size[size]*100:.2f}%")
+    elif size == "mini":
+        result = {}
+        result["Model"] = model.split("%")[0]
+        result["Mode"] = model.split("%")[1]
+        result["Puzzle Acc"] = f"{solved_puzzles/num_total_puzzles*100:.2f}"
+        result["Cell Acc"] = f"{correct_cells/total_cells*100:.2f}"
+        result["No answer"] = f"{no_answer/num_total_puzzles*100:.2f}"
+        result["Total Puzzles"] = num_total_puzzles
+        result["Total Small Puzzles"] = small_total_puzzles
+        result["Total Correct Cells"] = correct_cells
+        result["Total Cells"] = total_cells
+        result["Reason Lens"] = f"{sum(reason_lens)/len(reason_lens):.2f}"
+        result["Model"] = model_name_replacement(result["Model"])
+        result["N_Mode"] = "single" if n_size == 1 else mode
+        result["N_Size"] = n_size
 
-    result = {}
-    result["Model"] = model.split("%")[0]
-    result["Mode"] = model.split("%")[1]
-    result["Puzzle Acc"] = f"{solved_puzzles/num_total_puzzles*100:.2f}"
-    result["Cell Acc"] = f"{correct_cells/total_cells*100:.2f}"
-    result["No answer"] = f"{no_answer/num_total_puzzles*100:.2f}"
-    result["Easy Puzzle Acc"] = f"{easy_solved_puzzles/easy_total_puzzles*100:.2f}"
-    result["Hard Puzzle Acc"] = f"{hard_solved_puzzles/hard_total_puzzles*100:.2f}"
-    result["Small Puzzle Acc"] = f"{small_solved_puzzles/small_total_puzzles*100:.2f}"
-    result["Medium Puzzle Acc"] = f"{medium_solved_puzzles/medium_total_puzzles*100:.2f}"
-    result["Large Puzzle Acc"] = f"{large_solved_puzzles/large_total_puzzles*100:.2f}"
-    result["XL Puzzle Acc"] = f"{xl_solved_puzzles/xl_total_puzzles*100:.2f}"
-    result["Total Puzzles"] = num_total_puzzles
-    result["Total Easy Puzzles"] = easy_total_puzzles
-    result["Total Hard Puzzles"] = hard_total_puzzles
-    result["Total Small Puzzles"] = small_total_puzzles
-    result["Total Medium Puzzles"] = medium_total_puzzles
-    result["Total Large Puzzles"] = large_total_puzzles
-    result["Total XL Puzzles"] = xl_total_puzzles
-    result["Total Correct Cells"] = correct_cells
-    result["Total Cells"] = total_cells
-    result["Reason Lens"] = f"{sum(reason_lens)/len(reason_lens):.2f}"
-    result["Model"] = model_name_replacement(result["Model"])
-    result["N_Mode"] = "single" if n_size == 1 else mode
-    result["N_Size"] = n_size
     return result, parsed_results  # Return parsed_results along with the result
 
 
@@ -410,6 +435,6 @@ if __name__ == "__main__":
         # "neg_feedback": "result_dirs/zebra-grid/neg_feedback_v2",
         # "zebra_oracle": "result_dirs/zebra-grid/zebra_oracle/",
     }
-    load_private_solutions()
-    gen_results(run_name_folders, bon=False, save_results=True, format="json")
+    load_private_solutions(size="mini")
+    gen_results(run_name_folders, bon=False, save_results=True, format="json", size="mini")
 
