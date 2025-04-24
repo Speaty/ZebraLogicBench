@@ -61,9 +61,9 @@ fi
 
 CACHE_DIR=${HF_HOME:-"default"}
 if [ "$run_name" = "default" ]; then
-    output_dir="result_dirs/${DATA_NAME}/" 
+    output_dir="/mnt/lustre/users/inf/js2042/ZebraLogicBench/result_dirs/${DATA_NAME}/" 
 else
-    output_dir="result_dirs/${DATA_NAME}/${run_name}" 
+    output_dir="/mnt/lustre/users/inf/js2042/ZebraLogicBench/result_dirs/${DATA_NAME}/${run_name}" 
 fi
 
 # if model name contains "gemma-2" then use a different vllm infer backend
