@@ -1,4 +1,5 @@
 from datasets import load_dataset
+from rich import inspect
 from _TEMPLATES import apply_mc_template, apply_lgp_grid_template, apply_oeqa_template
 
 def mapping_task_names(data_name):
@@ -6,26 +7,23 @@ def mapping_task_names(data_name):
     Mapping the task names to the dataset and id name.
     """
     id_name = "id"
-    if data_name == "mmlu-redux":
-        dataset = load_dataset("yuchenlin/zero-eval", "mmlu-redux", split="test")
-    elif data_name == "gsm":
-        dataset = load_dataset("yuchenlin/zero-eval", "gsm", split="test")
-    elif data_name == "zebra-grid":
+    if data_name == "zebra-grid":
         dataset = load_dataset("allenai/ZebraLogicBench", "grid_mode", split="test")
-    elif data_name == "alpaca_eval":
-        dataset = load_dataset("tatsu-lab/alpaca_eval", "alpaca_eval", split="eval")  
-    elif data_name == "numersense-v2":
-        dataset = load_dataset("yuchenlin/zero-eval", "numersense-v2", split="test")
-    elif data_name == "crux":
-        dataset = load_dataset("flydust/zero-eval", "crux", split="test")
-    elif data_name == "math-l5":
-        dataset = load_dataset("AI-MO/aimo-validation-math-level-5", split="train")
-    elif data_name == "wildbench_v2-hard":
-        dataset = load_dataset("allenai/WildBench", "v2-hard", split="test")
-        id_name = "session_id"
+    elif data_name == "zebra-grid-mini":
+        dataset = load_dataset("allenai/ZebraLogicBench", "grid_mode", split="test")
+        small_sizes = ['2*2', '2*3', '2*4', '2*5', '2*6', '3*2', '3*3', '4*2']
+        dataset = get_subset(dataset, small_sizes)
     else:
         raise ValueError(f"Data name {data_name} not supported")
     return dataset, id_name
+
+
+def get_subset(dataset, sizes):
+    """
+    Get a subset of the dataset based on the size.
+    """
+    subset = dataset.filter(lambda x: x["size"] in sizes)
+    return subset
 
 def prompt_generation(data_name, data_item, args):
     """
@@ -71,3 +69,10 @@ def result_format(output_item, args):
     else:
         pass 
     return output_item
+
+if __name__ == "__main__":
+    # Example usage
+    data_name = "zebra-grid-mini"
+    dataset, id_name = mapping_task_names(data_name)
+
+    inspect(dataset)
