@@ -7,7 +7,7 @@
 #SBATCH --mem=64G
 #SBATCH --gres=gpu:2
 #SBATCH --time=03:00:00
-#SBATCH --partitition=gpu
+#SBATCH --partition=gpu
 
 # Load modules or activate your conda environment
 source .venv/bin/activate
