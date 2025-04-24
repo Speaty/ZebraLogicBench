@@ -19,7 +19,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--engine', default="vllm", type=str)
     parser.add_argument('--output_folder', default="./result_dirs/wild_bench/", type=str)
-    parser.add_argument('--download_dir', default="/mnt/lustre/scratch/inf/js2042", type=str)
+    parser.add_argument('--download_dir', default="/mnt/lustre/users/inf/js2042/models/cache", type=str)
     parser.add_argument('--model_name', default=None, type=str)
     parser.add_argument('--model_pretty_name', default=None, type=str)
     parser.add_argument('--tokenizer_name', default="auto", type=str)
