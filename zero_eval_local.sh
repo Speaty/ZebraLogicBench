@@ -149,8 +149,8 @@ elif [ $n_shards -gt 1 ]; then
             --top_p $TOP_P --temperature $TEMP \
             --repetition_penalty $rp \
             --batch_size $batch_size --max_tokens $MAX_TOKENS \
-            --output_folder $shards_dir/ \d
-            --format $format \
+            --output_folder $shards_dir/ \
+            --format $format 
     done 
     wait 
     python src/merge_results.py $shards_dir/ $model_pretty_name
@@ -159,4 +159,3 @@ else
     echo "Invalid n_shards"
     exit
 fi
- 
