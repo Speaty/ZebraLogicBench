@@ -40,6 +40,9 @@ file_cache = {}
 def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json", size="all"):
     global private_solutions, file_cache
     print(f"Evaluating {model} with mode {mode} and max_N {max_N} format {format} and size {size}")
+    
+
+
     # Check if the data is already cached
     if filepath in file_cache:
         print(f"Using cached data for {filepath}")
@@ -50,6 +53,8 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json", siz
             data = json.load(f)
             # Cache the loaded data
             file_cache[filepath] = data
+    
+    print(f"Data loaded from {filepath} has {len(data)} items")
 
     solved_puzzles = 0
     num_total_puzzles = len(data)
@@ -62,6 +67,8 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json", siz
     reason_lens = []
     parsed_results = []  # New list to store parsed results
     for item in data:
+        print(f"Evaluating item {item['id']}")
+        print(f"Raw output: {item['output']}")
         # solution = item["solution"]
         solution = private_solutions[item["id"]]
         size = item["size"]
@@ -91,6 +98,7 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json", siz
             raise ValueError(f"Unknown format: {format}")
         predictions = [p for p in predictions if p is not None and "solution" in p and p["solution"] is not None]
 
+        print(f"Extracted predictions: {predictions}")
         # if all the predictions are empty, then skip the current puzzle, and add no answer count
         if not predictions:
             no_answer += 1
