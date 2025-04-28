@@ -405,14 +405,14 @@ def gen_results(run_name_folders, bon=False, save_results=True, format="json", s
             result, parsed_results = eval_model(model_name, filepath, mode="single", format=format, size=size)
             save_parsed_results(filepath, parsed_results)
             rows.append(result)
-    #if "bon_" in filepath:
+    if "bon_" in filepath:
         # rows = sorted(rows, key=lambda x: -float(x["Puzzle Acc"]))
         # first sort by N_Mode and then sort by N_Size
         # Sort the rows first by model name and then "N_Mode" and then by "N_Size"
-    #    rows = sorted(rows, key=lambda x: (x["Model"], x["N_Mode"], x["N_Size"]))
-    #else:
+       rows = sorted(rows, key=lambda x: (x["Model"], x["N_Mode"], x["N_Size"]))
+    else:
         # sort the rows by puzzle accuracy
-    rows = sorted(rows, key=lambda x: -float(x["Puzzle Acc"]))
+        rows = sorted(rows, key=lambda x: -float(x["Puzzle Acc"]))
     # Convert rows to the expected format for tabulate
     table_data = [[row[col] for col in columns] for row in rows]
 
