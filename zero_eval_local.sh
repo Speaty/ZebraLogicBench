@@ -127,8 +127,8 @@ if [ $n_shards -eq 1 ]; then
 
 elif [ $n_shards -gt 1 ]; then
     echo "Using Data-parallelism"
-    start_gpu=3
-    num_gpus=8
+    start_gpu=0
+    num_gpus=2
     shards_dir="${output_dir}/tmp_${model_pretty_name}"
     for ((shard_id = 0, gpu = $start_gpu; shard_id < $n_shards; shard_id++, gpu++)); do
         CUDA_VISIBLE_DEVICES=$gpu \

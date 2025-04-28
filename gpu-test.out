@@ -1,0 +1,2 @@
+CUDA_VISIBLE_DEVICES=0
+CUDA device count: 1
