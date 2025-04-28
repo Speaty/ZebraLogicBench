@@ -402,7 +402,7 @@ def gen_results(run_name_folders, bon=False, save_results=True, format="json", s
                 # rows.append(result)
         else:
             # Save the parsed_results to the same filepath with a new prefix
-            result, parsed_results = eval_model(model_name, filepath, mode="single", format=format)
+            result, parsed_results = eval_model(model_name, filepath, mode="single", format=format, size=size)
             save_parsed_results(filepath, parsed_results)
             rows.append(result)
     #if "bon_" in filepath:
