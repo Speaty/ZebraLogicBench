@@ -432,7 +432,7 @@ def gen_results(run_name_folders, bon=False, save_results=True, format="json", s
 if __name__ == "__main__":
 
     run_name_folders = {
-        "greedy": "result_dirs/zebra-grid/",
+        "greedy": "result_dirs/",
         # "sampling": "result_dirs/zebra-grid/sampling",
         # "bon_all": "result_dirs/zebra-grid/bon_all",
         # "rm": "result_dirs/zebra-grid/rm_32",
