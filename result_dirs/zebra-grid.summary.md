@@ -1,7 +1,0 @@
-|           Model           |  Mode  |  N_Mode  |  N_Size  |  Puzzle Acc  |  Small Puzzle Acc  |  Medium Puzzle Acc  |  Large Puzzle Acc  |  XL Puzzle Acc  |  Cell Acc  |  No answer  |  Total Puzzles  |  Reason Lens  |
-|---------------------------|--------|----------|----------|--------------|--------------------|---------------------|--------------------|-----------------|------------|-------------|-----------------|---------------|
-|   Llama3.1-8B-Instruct    | greedy |  single  |    1     |     12.3     |       38.12        |        0.36         |         0          |        0        |   13.68    |    62.1     |      1000       |    1023.94    |
-|     Qwen2-7B-Instruct     | greedy |  single  |    1     |     7.3      |        22.5        |        0.36         |         0          |        0        |   22.52    |    24.5     |      1000       |    1504.05    |
-|    Qwen25-14B-Instruct    | greedy |  single  |    1     |     7.3      |       21.25        |        1.79         |         0          |        0        |   17.76    |    16.9     |      1000       |    1069.24    |
-|  Qwen2-7B-Math-Instruct   | greedy |  single  |    1     |     6.6      |       20.62        |          0          |         0          |        0        |   21.62    |    24.7     |      1000       |    844.64     |
-| Qwen25-14B-Coder-Instruct | greedy |  single  |    1     |     5.9      |       18.12        |        0.36         |         0          |        0        |   15.32    |    19.7     |      1000       |    1307.47    |

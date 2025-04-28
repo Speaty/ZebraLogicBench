@@ -432,7 +432,7 @@ def gen_results(run_name_folders, bon=False, save_results=True, format="json"):
 if __name__ == "__main__":
 
     run_name_folders = {
-        "greedy": "result_dirs/zebra-grid/json",
+        "greedy": "result_dirs/zebra-grid/",
         # "sampling": "result_dirs/zebra-grid/sampling",
         # "bon_all": "result_dirs/zebra-grid/bon_all",
         # "rm": "result_dirs/zebra-grid/rm_32",
@@ -440,6 +440,6 @@ if __name__ == "__main__":
         # "neg_feedback": "result_dirs/zebra-grid/neg_feedback_v2",
         # "zebra_oracle": "result_dirs/zebra-grid/zebra_oracle/",
     }
-    load_private_solutions(size="mini")
-    gen_results(run_name_folders, bon=False, save_results=True, format="json", size="mini")
+    load_private_solutions(size="test")
+    gen_results(run_name_folders, bon=False, save_results=True, format="json")
 
