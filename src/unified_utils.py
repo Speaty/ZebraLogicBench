@@ -69,9 +69,9 @@ def load_eval_data(args, data_name=None, model_name=None):
         dataset, id_name = mapping_task_names(data_name)
 
         print(f"Loaded {len(dataset)} examples from {data_name}")
-
+        print(f"Length of loaded dataset: {len(dataset)}")
+        print(f"Sample first example: {dataset[0] if len(dataset) > 0 else 'DATASET IS EMPTY'}")
         for ind, item in enumerate(dataset):
-            print(type(item), item)
             id_strs.append(item.get(id_name, f"{data_name}#{ind}"))
             prompt = prompt_generation(data_name, item, args)
             chat_history.append([prompt])

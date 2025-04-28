@@ -16,7 +16,9 @@ def mapping_task_names(data_name):
     elif data_name == "zebra-grid-test":
         dataset = load_dataset("allenai/ZebraLogicBench", "grid_mode", split="test")
         dataset = get_subset(dataset, ["2*2"])
-        inspect(dataset)
+        print(f"LEGNTH OF DATASET AFTER GET_SUBSET: {len(dataset)}")
+        print(f"EXAMPLE: {dataset[0]}")
+
     else:
         raise ValueError(f"Data name {data_name} not supported")
     return dataset, id_name
