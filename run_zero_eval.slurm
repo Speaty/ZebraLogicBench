@@ -14,7 +14,11 @@
 
 set -x
 
-export TORCH_COMPILE_CAcHE=/mnt/lustre/users/inf/js2042/torch_compile_cache
+export XDG_CACHE_HOME=/mnt/lustre/users/inf/js2042/vllm_cache
+mkdir -p $XDG_CACHE_HOME
+
+# Optional, but good to have
+export TORCH_COMPILE_CACHE=$XDG_CACHE_HOME/torch_compile_cache
 mkdir -p $TORCH_COMPILE_CACHE
 
 
