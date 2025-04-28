@@ -20,6 +20,11 @@ def load_private_solutions(size):
         private_zebra_data = load_dataset("allenai/ZebraLogicBench-private", "grid_mode", split="test")
         small_sizes = ['2*2', '2*3', '2*4', '2*5', '2*6', '3*2', '3*3', '4*2']
         private_zebra_data = private_zebra_data.filter(lambda x: x["size"] in small_sizes)
+    elif size == "test":
+        private_zebra_data = load_dataset("allenai/ZebraLogicBench-private", "grid_mode", split="test")
+        private_zebra_data = private_zebra_data.filter(lambda x: x["size"] in ["2*2"])
+        print(f"LEGNTH OF DATASET AFTER GET_SUBSET: {len(private_zebra_data)}")
+        print(f"EXAMPLE: {private_zebra_data[0]}")
     else:
         raise ValueError(f"Size {size} not recognised")
     
