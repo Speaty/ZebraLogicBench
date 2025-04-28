@@ -14,6 +14,10 @@
 
 set -x
 
+export TORCH_COMPILE_CAcHE=/mnt/lustre/users/inf/js2042/torch_compile_cache
+mkdir -p $TORCH_COMPILE_CACHE
+
+
 module purge
 module load Python/3.10.8-GCCcore-12.2.0
 
