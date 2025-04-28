@@ -327,7 +327,7 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json", siz
         result["N_Mode"] = "single" if n_size == 1 else mode
         result["N_Size"] = n_size
 
-    elif size == "mini":
+    elif size == "mini" or size == "test":
         result = {}
         result["Model"] = model.split("%")[0]
         result["Mode"] = model.split("%")[1]
@@ -346,7 +346,7 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json", siz
     return result, parsed_results  # Return parsed_results along with the result
 
 
-def gen_results(run_name_folders, bon=False, save_results=True, format="json"):
+def gen_results(run_name_folders, bon=False, save_results=True, format="json", size="all"):
     model_results = load_model_results(run_name_folders)
 
     def save_parsed_results(filepath, parsed_results, bon=bon):
@@ -385,7 +385,7 @@ def gen_results(run_name_folders, bon=False, save_results=True, format="json"):
                     continue
                 if "rm_32" in filepath and K > 32:
                     continue
-                result, parsed_results = eval_model(model_name, filepath, mode="rm_bon", max_N=K, format=format)
+                result, parsed_results = eval_model(model_name, filepath, mode="rm_bon", max_N=K, format=format, size=size)
                 save_parsed_results(filepath.replace(".json", f".rm_bon.K={K}.json"), parsed_results)
                 rows.append(result)
 
@@ -441,5 +441,5 @@ if __name__ == "__main__":
         # "zebra_oracle": "result_dirs/zebra-grid/zebra_oracle/",
     }
     load_private_solutions(size="test")
-    gen_results(run_name_folders, bon=False, save_results=True, format="json")
+    gen_results(run_name_folders, bon=False, save_results=True, format="json", size="test")
 
