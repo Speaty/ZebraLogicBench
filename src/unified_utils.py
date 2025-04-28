@@ -71,6 +71,7 @@ def load_eval_data(args, data_name=None, model_name=None):
         print(f"Loaded {len(dataset)} examples from {data_name}")
 
         for ind, item in enumerate(dataset):
+            print(type(item), item)
             id_strs.append(item.get(id_name, f"{data_name}#{ind}"))
             prompt = prompt_generation(data_name, item, args)
             chat_history.append([prompt])
