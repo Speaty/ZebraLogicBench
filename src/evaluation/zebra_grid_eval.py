@@ -39,7 +39,7 @@ file_cache = {}
 
 def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json", size="all"):
     global private_solutions, file_cache
-
+    print(f"Evaluating {model} with mode {mode} and max_N {max_N} format {format} and size {size}")
     # Check if the data is already cached
     if filepath in file_cache:
         print(f"Using cached data for {filepath}")
