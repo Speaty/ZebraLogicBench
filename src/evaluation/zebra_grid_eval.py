@@ -8,6 +8,7 @@ from eval_utils import load_model_results, extract_last_complete_json, extract_l
 
 from collections import Counter
 from collections import defaultdict
+from rich import inspect
 
 private_solutions = {}
 
@@ -37,9 +38,9 @@ def load_private_solutions(size):
 # Cache to store loaded data
 file_cache = {}
 
-def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json", size="all"):
+def eval_model(model, filepath, mode="single", max_N=None, format="json", res_size="all"):
     global private_solutions, file_cache
-    print(f"Evaluating {model} with mode {mode} and max_N {max_N} format {format} and size {size}")
+    print(f"Evaluating {model} with mode {mode} and max_N {max_N} format {format} and size {res_size}")
     
 
 
@@ -66,9 +67,12 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json", siz
     solved_puzzles_by_size = defaultdict(int)
     reason_lens = []
     parsed_results = []  # New list to store parsed results
+
+    inspect(data[0])
+
     for item in data:
         print(f"Evaluating item {item['id']}")
-        print(f"Raw output: {item['output']}")
+        # print(f"Raw output: {item['output']}")
         # solution = item["solution"]
         solution = private_solutions[item["id"]]
         size = item["size"]
@@ -98,7 +102,7 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json", siz
             raise ValueError(f"Unknown format: {format}")
         predictions = [p for p in predictions if p is not None and "solution" in p and p["solution"] is not None]
 
-        print(f"Extracted predictions: {predictions}")
+        # print(f"Extracted predictions: {predictions}")
         # if all the predictions are empty, then skip the current puzzle, and add no answer count
         if not predictions:
             no_answer += 1
@@ -123,9 +127,11 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json", siz
 
         if n_size == 1:
             mode = "single"
+            print("Single prediction mode")
             # Single output case
             prediction_table = predictions[0]["solution"]
             reason = predictions[0].get("reasoning", "")
+            print(f"Single prediction: {prediction_table}")
         elif mode == "rm_bon":
             # there are reward model scores in the output
             # the item contains two new keys: rm_scores, rm
@@ -256,6 +262,8 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json", siz
                 # if prediction_table[house][column] not exist then pass
                 if house in prediction_table and column in prediction_table[house]:
                     truth_cell = solution_table[house][column].lower().strip()
+                    print(f"truth_cell: {truth_cell}")
+                    print(f"prediction_table[house][column]: {prediction_table[house][column]}")
                     if prediction_table[house][column] is None or len(prediction_table[house][column]) == 0:
                         continue
                     if type(prediction_table[house][column]) == list:
@@ -269,7 +277,8 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json", siz
                     if truth_cell.lower().strip() == predicted_cell.lower().strip():
                         this_correct_cells += 1
         correct_cells += this_correct_cells
-
+        print(f"this_correct_cells: {this_correct_cells}")
+        print(f"this_total_cells: {this_total_cells}")
         # compute puzzle success rate
         if this_correct_cells == this_total_cells:
             solved_puzzles += 1
@@ -285,7 +294,7 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json", siz
 
 
     # # print the success rate by size; order the dict by size first
-    sizes = sorted(num_total_puzzles_by_size.keys())
+    # sizes = sorted(num_total_puzzles_by_size.keys())
     easy_sizes =  ['2*2', '2*3', '2*4', '2*5', '2*6', '3*2', '3*3',]
     hard_sizes =  ['3*4', '3*5', '4*2', '3*6', '4*3', '4*4', '5*2', '6*2', '4*5', '4*6', '5*3', '5*4', '5*5', '5*6', '6*3', '6*4', '6*5', '6*6']
 
@@ -308,7 +317,7 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json", siz
     xl_solved_puzzles = sum([solved_puzzles_by_size[size] for size in xl_sizes])
     xl_total_puzzles = sum([num_total_puzzles_by_size[size] for size in xl_sizes])
 
-    if size == "all":
+    if res_size == "all":
         result = {}
         result["Model"] = model.split("%")[0]
         result["Mode"] = model.split("%")[1]
@@ -335,7 +344,8 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json", siz
         result["N_Mode"] = "single" if n_size == 1 else mode
         result["N_Size"] = n_size
 
-    elif size == "mini" or size == "test":
+    elif res_size == "mini" or res_size == "test":
+        print(f"GENERATING {size} RESULTS")
         result = {}
         result["Model"] = model.split("%")[0]
         result["Mode"] = model.split("%")[1]
@@ -350,11 +360,11 @@ def eval_model(model, filepath, mode="best_of_n", max_N=None, format="json", siz
         result["Model"] = model_name_replacement(result["Model"])
         result["N_Mode"] = "single" if n_size == 1 else mode
         result["N_Size"] = n_size
-
+   
     return result, parsed_results  # Return parsed_results along with the result
 
 
-def gen_results(run_name_folders, bon=False, save_results=True, format="json", size="all"):
+def gen_results(run_name_folders, bon=False, save_results=True, format="json", res_size="all"):
     model_results = load_model_results(run_name_folders)
 
     def save_parsed_results(filepath, parsed_results, bon=bon):
@@ -376,7 +386,10 @@ def gen_results(run_name_folders, bon=False, save_results=True, format="json", s
             print(f"Saved to {f.name}")
 
     # columns = ["Model", "Mode", "N_Mode", "N_Size", "Puzzle Acc", "Easy Puzzle Acc", "Hard Puzzle Acc", "Cell Acc",  "No answer",  "Total Puzzles", "Reason Lens"]
-    columns = ["Model", "Mode", "N_Mode", "N_Size", "Puzzle Acc", "Small Puzzle Acc", "Medium Puzzle Acc", "Large Puzzle Acc", "XL Puzzle Acc", "Cell Acc",  "No answer",  "Total Puzzles", "Reason Lens"]
+    if res_size == "all":
+        columns = ["Model", "Mode", "N_Mode", "N_Size", "Puzzle Acc", "Small Puzzle Acc", "Medium Puzzle Acc", "Large Puzzle Acc", "XL Puzzle Acc", "Cell Acc",  "No answer",  "Total Puzzles", "Reason Lens"]
+    elif res_size == "mini" or res_size == "test":
+        columns = ["Model", "Mode", "N_Mode", "N_Size", "Puzzle Acc", "Cell Acc",  "No answer",  "Total Puzzles", "Reason Lens"]
     rows = []
 
     for model_name, filepath in model_results.items():
@@ -393,7 +406,7 @@ def gen_results(run_name_folders, bon=False, save_results=True, format="json", s
                     continue
                 if "rm_32" in filepath and K > 32:
                     continue
-                result, parsed_results = eval_model(model_name, filepath, mode="rm_bon", max_N=K, format=format, size=size)
+                result, parsed_results = eval_model(model_name, filepath, mode="rm_bon", max_N=K, format=format, res_size=res_size)
                 save_parsed_results(filepath.replace(".json", f".rm_bon.K={K}.json"), parsed_results)
                 rows.append(result)
 
@@ -410,7 +423,7 @@ def gen_results(run_name_folders, bon=False, save_results=True, format="json", s
                 # rows.append(result)
         else:
             # Save the parsed_results to the same filepath with a new prefix
-            result, parsed_results = eval_model(model_name, filepath, mode="single", format=format, size=size)
+            result, parsed_results = eval_model(model_name, filepath, mode="single", format=format, res_size=res_size)
             save_parsed_results(filepath, parsed_results)
             rows.append(result)
     if "bon_" in filepath:
@@ -440,7 +453,7 @@ def gen_results(run_name_folders, bon=False, save_results=True, format="json", s
 if __name__ == "__main__":
 
     run_name_folders = {
-        "greedy": "result_dirs/",
+        "greedy": "result_dirs/test/",
         # "sampling": "result_dirs/zebra-grid/sampling",
         # "bon_all": "result_dirs/zebra-grid/bon_all",
         # "rm": "result_dirs/zebra-grid/rm_32",
@@ -449,5 +462,5 @@ if __name__ == "__main__":
         # "zebra_oracle": "result_dirs/zebra-grid/zebra_oracle/",
     }
     load_private_solutions(size="test")
-    gen_results(run_name_folders, bon=False, save_results=True, format="json", size="test")
+    gen_results(run_name_folders, bon=False, save_results=True, format="json", res_size="test")
 

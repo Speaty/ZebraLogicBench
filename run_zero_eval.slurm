@@ -5,8 +5,8 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
-#SBATCH --gres=gpu:1
-#SBATCH --time=03:00:00
+#SBATCH --gres=gpu:2
+#SBATCH --time=12:00:00
 #SBATCH --partition=gpu
 #SBATCH --mail-user js2042@sussex.ac.uk
 #SBATCH --mail-type=ALL
@@ -20,7 +20,6 @@ mkdir -p $XDG_CACHE_HOME
 # Optional, but good to have
 export TORCH_COMPILE_CACHE=$XDG_CACHE_HOME/torch_compile_cache
 mkdir -p $TORCH_COMPILE_CACHE
-
 
 module purge
 module load Python/3.10.8-GCCcore-12.2.0
@@ -41,30 +40,44 @@ export HF_HOME=/mnt/lustre/users/inf/js2042/models/cache
 
 # Change to the directory of your repo
 cd /mnt/lustre/users/inf/js2042/ZebraLogicBench/  
+# === COFIGURATION ===
+DATA_NAME="zebra-grid-mini"
+RUN_NAME="mini"
+MODELS=("Qwen/Qwen2-7B-Instruct" "Qwen/Qwen2-7B-Math-Instruct" "Qwen/Qwen2.5-14B-Instruct" "Qwen/Qwen2.5-14B-Coder-Instruct" "meta-llama/Llama-3.1-8B-Instruct")
+DTYPES=("json" "xml")
+BASE_DIR="/mnt/lustre/users/inf/js2042/ZebraLogicBench/result_dirs/"
 
-python /mnt/lustre/users/inf/js2042/ZebraLogicBench/src/unified_infer.py \
-	--engine vllm \
-	--data_name "zebra-grid-test" \
-	--model_name "Qwen/Qwen2-7B-Instruct" \
-	--run_name "test"\
-	--gpu_memory_utilization 0.8\
-	--max_model_len -1\
-	--use_hf_conv_template --use_imend_stop \
-	--download_dir $HF_HOME\
-	--tensor_parallel_size 1\
-	--dtype bfloat16 \
-	--model_pretty_name "test"\
-	--top_p 1.0 --temperature 0\
-	--repetition_penalty 1.0 \
-	--batch_size 4 \
-	--output_folder "/mnt/lustre/users/inf/js2042/ZebraLogicBench/result_dirs/" \
-	--format "json"\
+for MODEL in "${MODELS[@]}"; do
+	# replace '/' with _ for folder name
+	SAFE_MODEL_NAME="$(echo $MODEL | tr '/' '_')"
+	for DT in "${DTYPES[@]}"; do
+		
+		# Create output directory if it doesn't exist
+		OUT_DIR="$BASE_DIR/$DATA_NAME/$DT/$SAFE_MODEL_NAME/"
+		mkdir -p "$OUT_DIR"
 
-# Run the experiment
-#bash zero_eval_local.sh \
-#  -d zebra-grid-test \
-#  -m Qwen/Qwen2-7B-Instruct \
-#  -p Qwen2-7B-Instruct \
-#  -s 1 \
-#  -F json \
-#  -r test
+		echo "=== RUNNING MODEL = $MODEL_NAME === FORMAT = $DT ==="
+		# Run the evaluation script
+		srun --gpus=2 --cpus-per-task=8 \
+			python /mnt/lustre/users/inf/js2042/ZebraLogicBench/src/unified_infer.py \
+			--engine vllm \
+			--data_name "$DATA_NAME" \
+			--model_name "$MODEL" \
+			--run_name "$RUN_NAME"\
+			--gpu_memory_utilization 0.8\
+			--max_model_len -1\
+			--use_hf_conv_template --use_imend_stop \
+			--download_dir $HF_HOME\
+			--tensor_parallel_size 1\
+			--dtype bfloat16 \
+			--model_pretty_name "$SAFE_MODEL_NAME"\
+			--top_p 1.0 --temperature 0\
+			--repetition_penalty 1.0 \
+			--batch_size 4 \
+			--output_folder "$OUT_DIR" \
+			--format "$DT"
+	done
+done
+
+
+
