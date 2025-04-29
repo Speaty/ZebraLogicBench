@@ -11,6 +11,7 @@ from global_configs import HF_TEMPLATED_MODELS, IM_END_MODELS
 from unified_utils import openai_chat_request, retry_handler, google_chat_request, cohere_chat_request, mistral_chat_request, anthropic_chat_request, together_chat_request, reka_chat_request
 from hf_models import DecoderOnlyModelManager
 from transformers import AutoTokenizer
+import sys
 
 # import multiprocessing as mp
 # mp.set_start_method('spawn', force=True)
@@ -252,7 +253,7 @@ if __name__ == "__main__":
             outputs.extend([[o.text for o in x.outputs] for x in batch_outputs]) # TODO: enbale multiple generation
             save_outputs(args, id_strs, outputs, chat_history, metadata, model_inputs, filepath)
         save_outputs(args, id_strs, outputs, chat_history, metadata, model_inputs, filepath)
-
+        sys.exit(0)
     elif args.engine == "hf":
         for cur_id in tqdm(range(0, len(todo_inputs), args.batch_size), desc=f"Generating {args.model_name} from {args.start_index} to {args.end_index} on {args.data_name}"):
             batch_inputs = todo_inputs[cur_id:cur_id+args.batch_size]

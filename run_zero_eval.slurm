@@ -56,7 +56,7 @@ for MODEL in "${MODELS[@]}"; do
 		OUT_DIR="$BASE_DIR/$DATA_NAME/$DT/$SAFE_MODEL_NAME/"
 		mkdir -p "$OUT_DIR"
 
-		echo "=== RUNNING MODEL = $MODEL_NAME === FORMAT = $DT ==="
+		echo "=== RUNNING MODEL = $SAFE_MODEL_NAME === FORMAT = $DT ==="
 		# Run the evaluation script
 		srun --gpus=2 --cpus-per-task=8 \
 			python /mnt/lustre/users/inf/js2042/ZebraLogicBench/src/unified_infer.py \
