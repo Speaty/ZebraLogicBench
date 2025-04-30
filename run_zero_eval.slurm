@@ -27,6 +27,7 @@ module load Python/3.10.8-GCCcore-12.2.0
 
 # Load modules or activate your conda environment
 source /mnt/lustre/users/inf/js2042/ZebraLogicBench/.venv/bin/activate
+PYTHON=$(which python)
 
 # non‐interactive HF login
 if [ -z "${HF_HUB_TOKEN-}" ]; then
@@ -68,7 +69,7 @@ for MODEL in "${MODELS[@]}"; do
 		echo "=== RUNNING MODEL = $SAFE_MODEL_NAME === FORMAT = $DT ==="
 		# Run the evaluation script
 		srun --gpus=2 --cpus-per-task=8 \
-			python /mnt/lustre/users/inf/js2042/ZebraLogicBench/src/unified_infer.py \
+			$PYTHON /mnt/lustre/users/inf/js2042/ZebraLogicBench/src/unified_infer.py \
 			--engine vllm \
 			--data_name "$DATA_NAME" \
 			--model_name "$MODEL" \
