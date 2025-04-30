@@ -54,7 +54,7 @@ DATA_NAME="zebra-grid-mini"
 RUN_NAME="mini"
 MODELS=("Qwen/Qwen2.5-7B-Instruct" "Qwen/Qwen2.5-Math-7B-Instruct" "Qwen/Qwen2.5-14B-Instruct" "Qwen/Qwen2.5-coder-14B-Instruct" "meta-llama/Llama-3.1-8B-Instruct")
 DTYPES=("json" "xml")
-BASE_DIR="/mnt/lustre/users/inf/js2042/ZebraLogicBench/result_dirs/"
+BASE_DIR="/mnt/lustre/users/inf/js2042/ZebraLogicBench/result_dirs"
 
 for MODEL in "${MODELS[@]}"; do
 	# replace '/' with _ for folder name
