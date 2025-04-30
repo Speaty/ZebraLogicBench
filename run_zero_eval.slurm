@@ -10,6 +10,7 @@
 #SBATCH --partition=gpu
 #SBATCH --mail-user js2042@sussex.ac.uk
 #SBATCH --mail-type=ALL
+#SBATCH --export=HF_HUB_TOKEN
 # export CUDA_VISIBLE_DEVICES=0
 
 set -x
@@ -27,6 +28,14 @@ module load Python/3.10.8-GCCcore-12.2.0
 # Load modules or activate your conda environment
 source /mnt/lustre/users/inf/js2042/ZebraLogicBench/.venv/bin/activate
 
+# non‐interactive HF login
+if [ -z "${HF_HUB_TOKEN-}" ]; then
+  echo "❌ HF_HUB_TOKEN is not set; private models may fail to download"
+  exit 1
+fi
+echo "$HF_HUB_TOKEN" | huggingface-cli login --stdin
+
+
 echo "======= ENVIRONMENT DEBUG ======="
 which python
 python --version
@@ -43,7 +52,7 @@ cd /mnt/lustre/users/inf/js2042/ZebraLogicBench/
 # === COFIGURATION ===
 DATA_NAME="zebra-grid-mini"
 RUN_NAME="mini"
-MODELS=("Qwen/Qwen2-7B-Instruct" "Qwen/Qwen2-7B-Math-Instruct" "Qwen/Qwen2.5-14B-Instruct" "Qwen/Qwen2.5-14B-Coder-Instruct" "meta-llama/Llama-3.1-8B-Instruct")
+MODELS=("Qwen/Qwen2.5-7B-Instruct" "Qwen/Qwen2.5-Math-7B-Instruct" "Qwen/Qwen2.5-14B-Instruct" "Qwen/Qwen2.5-coder-14B-Instruct" "meta-llama/Llama-3.1-8B-Instruct")
 DTYPES=("json" "xml")
 BASE_DIR="/mnt/lustre/users/inf/js2042/ZebraLogicBench/result_dirs/"
 
