@@ -69,23 +69,28 @@ for MODEL in "${MODELS[@]}"; do
 		echo "=== RUNNING MODEL = $SAFE_MODEL_NAME === FORMAT = $DT ==="
 		# Run the evaluation script
 		srun --gpus=2 --cpus-per-task=8 \
-			$PYTHON /mnt/lustre/users/inf/js2042/ZebraLogicBench/src/unified_infer.py \
+		bash -lc "
+			module load Python/3.10.8-GCCcore-12.2.0 && \
+			source /mnt/lustre/users/inf/js2042/ZebraLogicBench/.venv/bin/activate && \
+			python /mnt/lustre/users/inf/js2042/ZebraLogicBench/src/unified_infer.py \
 			--engine vllm \
-			--data_name "$DATA_NAME" \
-			--model_name "$MODEL" \
-			--run_name "$RUN_NAME"\
-			--gpu_memory_utilization 0.8\
-			--max_model_len -1\
+			--data_name '$DATA_NAME' \
+			--model_name '$MODEL' \
+			--run_name '$RUN_NAME' \
+			--gpu_memory_utilization 0.8 \
+			--max_model_len -1 \
 			--use_hf_conv_template --use_imend_stop \
-			--download_dir $HF_HOME\
-			--tensor_parallel_size 1\
+			--download_dir '$HF_HOME' \
+			--tensor_parallel_size 1 \
 			--dtype bfloat16 \
-			--model_pretty_name "$SAFE_MODEL_NAME"\
-			--top_p 1.0 --temperature 0\
+			--model_pretty_name '$SAFE_MODEL_NAME' \
+			--top_p 1.0 --temperature 0 \
 			--repetition_penalty 1.0 \
 			--batch_size 4 \
-			--output_folder "$OUT_DIR" \
-			--format "$DT"
+			--output_folder '$OUT_DIR' \
+			--format '$DT'
+		"
+
 	done
 done
 
