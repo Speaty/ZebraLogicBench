@@ -10,7 +10,7 @@
 #SBATCH --partition=gpu
 #SBATCH --mail-user js2042@sussex.ac.uk
 #SBATCH --mail-type=ALL
-#SBATCH --export=ALL,HF_HUB_TOKEN
+#SBATCH --export=ALL,HF_HUB_TOKEN, HF_TOKEN
 # export CUDA_VISIBLE_DEVICES=0
 
 set -x
@@ -39,12 +39,14 @@ echo "================================="
 # Optional: ensure Hugging Face models download to Lustre
 export HF_HOME=/mnt/lustre/users/inf/js2042/models/cache
 
+huggingface-cli login --token $HF_HUB_TOKEN
+
 # Change to the directory of your repo
 cd /mnt/lustre/users/inf/js2042/ZebraLogicBench/  
 # === COFIGURATION ===
 DATA_NAME="zebra-grid-mini"
 RUN_NAME="mini"
-MODELS=("Qwen/Qwen2.5-7B-Instruct" "Qwen/Qwen2.5-Math-7B-Instruct" "Qwen/Qwen2.5-14B-Instruct" "Qwen/Qwen2.5-coder-14B-Instruct" "meta-llama/Llama-3.1-8B-Instruct")
+MODELS=("meta-llama/Llama-3.1-8B-Instruct")
 DTYPES=("json" "xml")
 BASE_DIR="/mnt/lustre/users/inf/js2042/ZebraLogicBench/result_dirs"
 
