@@ -10,7 +10,7 @@
 #SBATCH --partition=gpu
 #SBATCH --mail-user js2042@sussex.ac.uk
 #SBATCH --mail-type=ALL
-#SBATCH --export=ALL,HF_HUB_TOKEN, HF_TOKEN
+#SBATCH --export=ALL,HF_HUB_TOKEN,HF_TOKEN
 # export CUDA_VISIBLE_DEVICES=0
 
 set -x
