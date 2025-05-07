@@ -46,9 +46,11 @@ cd /mnt/lustre/users/inf/js2042/ZebraLogicBench/
 # === COFIGURATION ===
 DATA_NAME="zebra-grid-mini"
 RUN_NAME="mini"
-MODELS=("meta-llama/Llama-3.1-8B-Instruct" "mistralai/Mistral-7B-Instruct-v0.1" "mistralai/Mixtral-8x7B-Instruct-v0.1")
+MODELS=("mistralai/Mistral-7B-Instruct-v0.1" "mistralai/Mixtral-8x7B-Instruct-v0.1")
 DTYPES=("json" "xml")
 BASE_DIR="/mnt/lustre/users/inf/js2042/ZebraLogicBench/result_dirs"
+ENGINE="mistral"
+# ENGINE="vllm"
 
 for MODEL in "${MODELS[@]}"; do
 	# replace '/' with _ for folder name
@@ -63,7 +65,7 @@ for MODEL in "${MODELS[@]}"; do
 		# Run the evaluation script
 		srun --gpus=2 --cpus-per-task=8 \
 			python /mnt/lustre/users/inf/js2042/ZebraLogicBench/src/unified_infer.py \
-			--engine vllm \
+			--engine "$ENGINE" \
 			--data_name "$DATA_NAME" \
 			--model_name "$MODEL" \
 			--run_name "$RUN_NAME"\
