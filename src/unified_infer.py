@@ -270,7 +270,7 @@ if __name__ == "__main__":
             outputs.extend(batch_outputs) # TODO: enbale multiple generation
             save_outputs(args, id_strs, outputs, chat_history, metadata, model_inputs, filepath)
         save_outputs(args, id_strs, outputs, chat_history, metadata, model_inputs, filepath)
-
+        sys.exit(0)
     elif args.engine == "openai":
         todo_chats = chat_history[num_skipped:]
         todo_ids = id_strs[num_skipped:]
@@ -445,7 +445,7 @@ if __name__ == "__main__":
             result = api(**mistral_args)
             outputs.append(result)
             save_outputs(args, id_strs, outputs, chat_history, metadata, model_inputs, filepath)
-
+            sys.exit(0)
     elif args.engine == "anthropic":
         todo_chats = chat_history[num_skipped:]
         @retry_handler(retry_limit=10)
@@ -476,7 +476,7 @@ if __name__ == "__main__":
             result = api(**anthropic_args)
             outputs.append(result)
             save_outputs(args, id_strs, outputs, chat_history, metadata, model_inputs, filepath)
-
+            sys.exit(0)
     elif args.engine == "reka":
         todo_chats = chat_history[num_skipped:]
         @retry_handler(retry_limit=10)

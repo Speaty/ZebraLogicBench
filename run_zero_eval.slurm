@@ -46,7 +46,7 @@ cd /mnt/lustre/users/inf/js2042/ZebraLogicBench/
 # === COFIGURATION ===
 DATA_NAME="zebra-grid-mini"
 RUN_NAME="mini"
-MODELS=("meta-llama/Llama-3.1-8B-Instruct")
+MODELS=("meta-llama/Llama-3.1-8B-Instruct" "mistralai/Mistral-7B-Instruct-v0.1" "mistralai/Mixtral-8x7B-Instruct-v0.1")
 DTYPES=("json" "xml")
 BASE_DIR="/mnt/lustre/users/inf/js2042/ZebraLogicBench/result_dirs"
 
