@@ -26,7 +26,7 @@ def parse_args():
     parser.add_argument('--tokenizer_name', default="auto", type=str)
     parser.add_argument('--tensor_parallel_size', type=int, default=1)
     parser.add_argument('--dtype', type=str, default="auto")
-    parser.add_argument('--tokenizer_mode', type=str, default="auto")
+    parser.add_argument('--tokenizer_mode', type=str, default="mistral")
     parser.add_argument('--data_name', default="wild_bench", type=str)
     parser.add_argument('--batch_size', default=1, type=int)
     parser.add_argument('--num_outputs', default=1, type=int)
