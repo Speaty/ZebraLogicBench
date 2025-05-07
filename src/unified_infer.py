@@ -226,7 +226,9 @@ if __name__ == "__main__":
                 metadata["hidden_reasoning_token"].append(output_item["hidden_reasoning_token"])
     num_skipped = len(outputs)
     print(f"We skipped the first {num_skipped} examples")
-
+    if num_skipped == len(model_inputs):
+        print(f"All examples are already generated. Exiting.")
+        sys.exit(0)
 
     # Load the existing data from the cache_filepath
     cache_outputs = {} 
