@@ -18,7 +18,10 @@ def mapping_task_names(data_name):
         dataset = get_subset(dataset, ["2*2"])
         print(f"LEGNTH OF DATASET AFTER GET_SUBSET: {len(dataset)}")
         print(f"EXAMPLE: {dataset[0]}")
-
+    elif data_name == "zebra-grid-mini-intermediate-json":
+        pass
+    elif data_name == "zebra-grid-mini-intermediate-xml":
+        pass
     else:
         raise ValueError(f"Data name {data_name} not supported")
     return dataset, id_name
